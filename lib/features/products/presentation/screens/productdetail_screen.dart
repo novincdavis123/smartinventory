@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/product.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+import '../../domain/entities/product.dart';
+import '../../../../services/favorites_service.dart';
+
+class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
   const ProductDetailScreen({super.key, required this.product});
 
   @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  final FavoritesService _favoritesService = FavoritesService();
+
+  bool isFav = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteStatus();
+  }
+
+  Future<void> _loadFavoriteStatus() async {
+    final favs = await _favoritesService.getFavorites();
+    setState(() {
+      isFav = favs.contains(widget.product.id.toString());
+    });
+  }
+
+  Future<void> _toggleFavorite() async {
+    await _favoritesService.toggleFavorite(widget.product.id.toString());
+
+    setState(() {
+      isFav = !isFav;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final product = widget.product;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -15,21 +49,28 @@ class ProductDetailScreen extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: isFav ? Colors.red : Colors.black,
+            ),
+            onPressed: _toggleFavorite,
+          ),
+        ],
       ),
 
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// -----------------------
-            /// PRODUCT IMAGE (HERO)
-            /// -----------------------
+            /// IMAGE
             Hero(
               tag: product.id,
-              child: Container(
-                width: double.infinity,
+              child: SizedBox(
                 height: 300,
-                padding: const EdgeInsets.all(16),
+                width: double.infinity,
                 child: Image.network(
                   product.image,
                   fit: BoxFit.contain,
@@ -41,15 +82,12 @@ class ProductDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// -----------------------
-            /// DETAILS SECTION
-            /// -----------------------
+            /// DETAILS
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// TITLE
                   Text(
                     product.title,
                     style: const TextStyle(
@@ -60,49 +98,36 @@ class ProductDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 8),
 
-                  /// CATEGORY
                   Text(
                     product.category.toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      letterSpacing: 1.2,
-                    ),
+                    style: const TextStyle(color: Colors.grey),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
 
-                  /// PRICE
                   Text(
                     "\$${product.price}",
                     style: const TextStyle(
                       fontSize: 22,
-                      fontWeight: FontWeight.bold,
                       color: Colors.green,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
 
-                  /// RATING
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.orange),
                       const SizedBox(width: 4),
-                      Text(
-                        "${product.rating} / 5",
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "(${product.ratingCount} reviews)",
-                        style: TextStyle(color: Colors.grey.shade600),
-                      ),
+                      Text("${product.rating}"),
+                      const SizedBox(width: 8),
+                      Text("(${product.ratingCount})"),
                     ],
                   ),
 
                   const SizedBox(height: 20),
 
-                  /// DESCRIPTION HEADER
                   const Text(
                     "Description",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -110,13 +135,10 @@ class ProductDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 8),
 
-                  /// DESCRIPTION
                   Text(
                     product.description,
-                    style: const TextStyle(fontSize: 14, height: 1.5),
+                    style: const TextStyle(height: 1.5),
                   ),
-
-                  const SizedBox(height: 30),
                 ],
               ),
             ),

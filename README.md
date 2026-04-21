@@ -1,16 +1,62 @@
-# smartinventory
+## 📱 Product Discovery & Inventory App
 
-A new Flutter project.
+A Flutter-based Product Discovery & Inventory application built as part of a machine test.
+The app fetches products from a public API and provides search, filtering, and detailed product views using a clean architecture approach.
 
-## Getting Started
+## 🚀 Features
 
-This project is a starting point for a Flutter application.
+📦 Fetch products from FakeStoreAPI
+🔍 Local search by title and category
+🧠 State management using Riverpod
+❤️ Product detail view with full information
+🖼️ Image loading with error handling
+🔄 Pull-to-refresh support
+⚡ Clean separation of UI and business logic
+🏗️ Architecture
 
-A few resources to get you started if this is your first Flutter project:
+## The project follows Clean Architecture (simplified):
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+lib/
+├── core/                 # Shared utilities & error handling
+├── features/
+│   └── products/
+│       ├── data/        # Models, API, repository impl
+│       ├── domain/      # Entities, repository contracts, usecases
+│       └── presentation # UI + Riverpod state management
+├── main.dart
+Flow:
+UI → Riverpod Notifier → UseCase → Repository → Remote Data Source → API
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🧠 State Management
+
+Implemented using Riverpod
+NotifierProvider manages:
+Product fetching state
+Loading / error / data states
+Local search filtering
+
+## 🌐 API Used
+
+FakeStoreAPI
+https://fakestoreapi.com/products
+📱 Screens
+🏠 Home Screen
+Product list
+Search bar (title/category filter)
+Pull-to-refresh
+📄 Product Detail Screen
+Product image (Hero animation)
+Title, category, price
+Rating & description
+## ⚙️ Tech Stack
+
+Flutter
+Dart
+Riverpod
+HTTP package
+Clean Architecture principles
+
+## 📦 How to Run
+
+flutter pub get
+flutter run
